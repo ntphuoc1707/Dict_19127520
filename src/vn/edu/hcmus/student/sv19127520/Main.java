@@ -65,10 +65,10 @@ public class Main {
         p.add(button1);
         p.add(Box.createRigidArea(new Dimension(0,5)));
 
-//        JButton button2=new JButton("Add word");
-//        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        p.add(button2);
-//        p.add(Box.createRigidArea(new Dimension(0,5)));
+        JButton button2=new JButton("Add word");
+        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button2);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
 //
 //        JButton button3=new JButton("Edit word");
 //        button3.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -89,13 +89,13 @@ public class Main {
             if(s.equals("Search")){
                 createAndShowSearch();
             }
-            else if(s.equals("Add Word")){
-
+            else if(s.equals("Add word")){
+                createAndShowAddWord();
             }
         };
 
         button1.addActionListener(y);
-//        button2.addActionListener(y);
+        button2.addActionListener(y);
 //        button3.addActionListener(y);
 //        button4.addActionListener(y);
 //        button5.addActionListener(y);
@@ -111,6 +111,144 @@ public class Main {
 
     }
 
+    public static void createAndShowAddWord(){
+        f.dispose();
+        f=new JFrame("Add slang word");
+        f.setMinimumSize(new Dimension(850,250));
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setLayout(new BorderLayout());
+        JPanel panel=new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel slang=new JPanel();
+        slang.setLayout(new FlowLayout());
+        JLabel l=new JLabel("Slang word:");
+        l.setFont(new Font("Verdana",Font.PLAIN,20));
+        slang.add(l);
+        JTextArea _slang=new JTextArea();
+        _slang.setFont(new Font("Verdana", Font.PLAIN,15));
+        _slang.setAlignmentX(Component.CENTER_ALIGNMENT);
+        _slang.setBounds(100,100,250,200);
+        _slang.setLineWrap(true);
+        //_slang.setMinimumSize(new Dimension(200,200));
+        JScrollPane scrollPane=new JScrollPane(_slang);
+        scrollPane.setPreferredSize(new Dimension(200,50));
+        slang.add(scrollPane);
+
+        JPanel defi=new JPanel();
+        defi.setLayout(new FlowLayout());
+        JLabel l1=new JLabel("Definition:");
+        l1.setFont(new Font("Verdana",Font.PLAIN,20));
+        defi.add(l1);
+        JTextArea _defi=new JTextArea();
+        _defi.setFont(new Font("Verdana", Font.PLAIN,15));
+        _defi.setAlignmentX(Component.CENTER_ALIGNMENT);
+        _defi.setBounds(100,100,250,200);
+        _defi.setLineWrap(true);
+        //_defi.setMinimumSize(new Dimension(100,100));
+        JScrollPane pane=new JScrollPane(_defi);
+        pane.setPreferredSize(new Dimension(300,150));
+        defi.add(pane);
+
+        JButton button=new JButton("ADD");
+
+        panel.add(slang);
+        panel.add(defi);
+        panel.add(button);
+        JButton dup=new JButton("Duplicate");
+        JButton ovw=new JButton("Overwrite");
+        JButton cancel=new JButton("Cancel");
+        ActionListener y=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s=e.getActionCommand();
+                if(s.equals("ADD")){
+                    String input=_slang.getText().toUpperCase(Locale.ROOT);
+                    for (int i = 0; i < dict.slag.size(); i++) {
+                        if (dict.slag.elementAt(i).equals(input)) {
+                            JDialog dialog=new JDialog(f,"Message",true);
+                            dialog.setLayout(new BorderLayout());
+                            dialog.setSize(new Dimension(200,200));
+                            dialog.setLocation((f.getWidth()-dialog.getWidth())/2,(f.getHeight()-dialog.getHeight())/2);
+                            JPanel p1=new JPanel(new FlowLayout());
+                            JLabel label=new JLabel("Slang word already exists");
+                            label.setFont(new Font("Verdana",Font.BOLD,15));
+                            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                            p1.add(label);
+                            dialog.add(p1,BorderLayout.PAGE_START);
+                            JLabel label1=new JLabel("What do you want?");
+                            label1.setFont(new Font("Verdana",Font.PLAIN,10));
+                            label1.setAlignmentX(Component.CENTER_ALIGNMENT);
+                            JPanel p2=new JPanel();
+                            p2.setLayout(new FlowLayout());
+                            p2.add(label1);
+                            dialog.add(p2,BorderLayout.CENTER);
+                            JPanel panel1=new JPanel();
+                            panel1.setLayout(new FlowLayout());
+                            panel1.add(dup);
+                            panel1.add(ovw);
+                            panel1.add(cancel);
+                            dialog.add(panel1,BorderLayout.PAGE_END);
+                            int finalI = i;
+                            int finalI1 = i;
+                            ActionListener x=new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    String str=e.getActionCommand();
+                                    if(str.equals("Duplicate")){
+                                        dict.meaning.elementAt(finalI).add(_defi.getText());
+                                        dialog.dispose();
+                                        JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
+                                        _slang.setText("");
+                                        _defi.setText("");
+                                        return;
+                                    }
+                                    if(str.equals("Overwrite")){
+                                        Vector<String> t=new Vector<>();
+                                        t.add(_defi.getText());
+                                        dict.meaning.setElementAt(t, finalI1);
+                                        dialog.dispose();
+                                        JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
+                                        _slang.setText("");
+                                        _defi.setText("");
+                                        return;
+                                    }
+                                    if(str.equals("Cancel")){
+                                        dialog.dispose();
+                                    }
+                                }
+                            };
+                            dup.addActionListener(x);
+                            ovw.addActionListener(x);
+                            cancel.addActionListener(x);
+                            dialog.pack();
+                            dialog.setVisible(true);
+                        }
+                    }
+                }
+                if(s.equals("Return")){
+                    createAndShowMenu();
+                }
+            }
+        };
+        JPanel middle=new JPanel();
+        SpringLayout layout=new SpringLayout();
+        middle.setLayout(layout);
+        middle.add(panel);
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER,panel,0,SpringLayout.HORIZONTAL_CENTER,middle);
+        layout.putConstraint(SpringLayout.VERTICAL_CENTER,panel,0,SpringLayout.VERTICAL_CENTER,middle);
+        f.add(middle,BorderLayout.CENTER);
+        JButton button1=new JButton("Return");
+        JPanel panel1=new JPanel();
+        panel1.setLayout(new FlowLayout());
+        panel1.add(button1);
+
+        button.addActionListener(y);
+        button1.addActionListener(y);
+        f.add(panel1,BorderLayout.PAGE_END);
+        f.pack();
+        f.setVisible(true);
+    }
     public static void createResult(String input, JPanel panel){
         panel.removeAll();
         panel.repaint();
@@ -330,10 +468,9 @@ public class Main {
                 JList<String> list=new JList(history.toArray());
                 JScrollPane pane1=new JScrollPane(list);
 
-                JDialog dialog=new JDialog(f,"History",true);
+                JDialog dialog=new JDialog(f,"Searched Slang Word History",true);
                 dialog.setLayout(new BorderLayout());
                 Dimension Size = Toolkit.getDefaultToolkit().getScreenSize();
-                System.out.println("X: "+f.getWidth()+", Y: "+f.getHeight());
                 dialog.setLocation(f.getWidth()/2-100,f.getHeight()/2-100);
                 dialog.add(pane1,BorderLayout.CENTER);
                 JPanel panel=new JPanel();
