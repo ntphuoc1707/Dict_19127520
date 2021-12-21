@@ -69,11 +69,11 @@ public class Main {
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(button2);
         p.add(Box.createRigidArea(new Dimension(0,5)));
-//
-//        JButton button3=new JButton("Edit word");
-//        button3.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        p.add(button3);
-//        p.add(Box.createRigidArea(new Dimension(0,5)));
+
+        JButton button3=new JButton("Edit word");
+        button3.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button3);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
 //
 //        JButton button4=new JButton("Delete word");
 //        button4.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -92,11 +92,14 @@ public class Main {
             else if(s.equals("Add word")){
                 createAndShowAddWord();
             }
+            else if(s.equals("Edit word")){
+                createAndShowEditWord();
+            }
         };
 
         button1.addActionListener(y);
         button2.addActionListener(y);
-//        button3.addActionListener(y);
+        button3.addActionListener(y);
 //        button4.addActionListener(y);
 //        button5.addActionListener(y);
         SpringLayout layout=new SpringLayout();
@@ -110,10 +113,173 @@ public class Main {
         f.setVisible(true);
 
     }
+    public static void createResultForEdit(String input, JPanel mp){
+        mp.removeAll();
+        mp.repaint();
+        mp.setLayout(new BorderLayout());
+        input=input.toUpperCase(Locale.ROOT);
+        JPanel panel=new JPanel();
+        panel.setLayout(new FlowLayout());
+        Vector<String> result=new Vector<>();
+        boolean have=false;
+        int pos=0;
+        for (int i = 0; i < dict.slag.size(); i++) {
+            if (dict.slag.elementAt(i).equals(input)) {
+                result=dict.meaning.elementAt(i);
+                pos=i;
+                have=true;
+                break;
+            }
+        }
+        final boolean[] act = {false};
+        if(have){
+            JLabel label=new JLabel(input.toUpperCase(Locale.ROOT)+":    ");
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            label.setAlignmentY(Component.CENTER_ALIGNMENT);
+            label.setFont(new Font("Verdana",Font.BOLD,20));
+            panel.add(label);
+            JPanel panel11=new JPanel();
+            panel11.setLayout(new FlowLayout());
+            JButton save=new JButton("Save");
+            JButton cancel=new JButton("Cancel");
+            panel11.add(save);
+            panel11.add(cancel);
+            JPanel panel1=new JPanel();
+            panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
+            JTextArea[] textFields=new JTextArea[result.size()];
+            for(int i=0;i<result.size();i++){
+                textFields[i]=new JTextArea();
+                textFields[i].setFont(new Font("Verdana",Font.PLAIN,15));
+                textFields[i].setText(result.elementAt(i));
+                textFields[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+                textFields[i].setBounds(100,100,1000,23);
+                textFields[i].setLineWrap(true);
+                JScrollPane scrollPane=new JScrollPane(textFields[i]);
+                if(result.elementAt(i).length()>700)
+                    scrollPane.setPreferredSize(new Dimension(1000,150));
+                else
+                    if(result.elementAt(i).length()<=100)
+                        scrollPane.setPreferredSize(new Dimension(result.elementAt(i).length()*10,23));
+                    else
+                        scrollPane.setPreferredSize(new Dimension(1000,23+(result.elementAt(i).length()/100)*23));
+                Vector<String> finalResult = result;
+                int finalI = i;
+                textFields[i].addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                        super.keyTyped(e);
+                        if (textFields[finalI].getText().length() >= 700)
+                            scrollPane.setPreferredSize(new Dimension(1000, 150));
+                        else{
+                            scrollPane.setPreferredSize(new Dimension(1000,23+(textFields[finalI].getText().length()/100)*23 ));
+                        }
+                        mp.remove(panel11);
+                        mp.add(panel11,BorderLayout.CENTER);
+                        f.pack();
+                    }
+                });
+                panel1.add(scrollPane);
+            }
+            int finalPos = pos;
+            ActionListener y=new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String s=e.getActionCommand();
+                    int k=0;
+                    if(s.equals("Save")){
+                        boolean check=false;
+                        for(int i = 0; i<dict.meaning.elementAt(finalPos).size(); i++){
+                            if(textFields[i].getText().length()==0) {
+                                check = true;
+                                break;
+                            }
+                        }
+                        if(check){
+                            int r=JOptionPane.showConfirmDialog(f,"If you leave it blank, you will delete its meaning. If the word has no meaning, it will be deleted"+'\n'+"Do you wanna save?","Message",JOptionPane.YES_NO_OPTION);
+                            if(r==JOptionPane.YES_OPTION){
+                                createAndShowEditWord();
+                            }
+                            if(r==JOptionPane.NO_OPTION){
+                                return;
+                            }
+                        }
+                        for(int i = 0; i<dict.meaning.elementAt(finalPos).size(); i++){
+                            if(textFields[i].getText().length()==0) {
+                                dict.meaning.elementAt(finalPos).remove(k);
+                            }
+                            else {
+                                dict.meaning.elementAt(finalPos).setElementAt(textFields[i].getText(), k);
+                                k++;
+                            }
+                        }
+                        if(dict.meaning.elementAt(finalPos).size()==0) {
+                            dict.slag.remove(finalPos);
+                            dict.meaning.remove(finalPos);
+                        }
+                        createAndShowEditWord();
+                    }
+                    else if(s.equals("Cancel")){
+                        mp.removeAll();
+                        mp.repaint();
+                        f.pack();
+                    }
+                }
+            };
+            save.addActionListener(y);
+            cancel.addActionListener(y);
+            panel.add(panel1);
+            mp.add(panel,BorderLayout.PAGE_START);
+            f.pack();
+            return;
+        }
+        JLabel label=new JLabel("Don't have");
+        label.setFont(new Font("Verdana",Font.ITALIC,13));
+        mp.setLayout(new FlowLayout());
+        mp.add(label);
+    }
+    public static void createAndShowEditWord(){
+        f.dispose();
+        f=new JFrame("Edit word");
+        f.setMinimumSize(new Dimension(500,100));
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setLayout(new BorderLayout());
+        JPanel p=new JPanel();
+        p.setLayout(new FlowLayout());
+        p.add(new JLabel("Slang word: "));
+        JTextField textField=new JTextField("",15);
+        JButton button=new JButton("Find");
+        p.add(textField);
+        p.add(button);
+        JButton button1=new JButton("Return");
+        p.add(button1);
+        JPanel k=new JPanel();
+        ActionListener y=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s=e.getActionCommand();
+                if(s.equals("Find")){
+                    createResultForEdit(textField.getText(),k);
+                    textField.setText("");
+                    f.pack();
+                }
+                else if(s.equals("Return")){
+                    createAndShowMenu();
+                }
+            }
+        };
+        button.addActionListener(y);
+        button1.addActionListener(y);
+        f.add(p,BorderLayout.PAGE_START);
+        f.add(k,BorderLayout.CENTER);
+        f.pack();
+        f.setVisible(true);
+
+    }
 
     public static void createAndShowAddWord(){
         f.dispose();
         f=new JFrame("Add slang word");
+        JFrame.setDefaultLookAndFeelDecorated(true);
         f.setMinimumSize(new Dimension(850,250));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new BorderLayout());
@@ -249,7 +415,7 @@ public class Main {
         f.pack();
         f.setVisible(true);
     }
-    public static void createResult(String input, JPanel panel){
+    public static void createResultForSearch(String input, JPanel panel){
         panel.removeAll();
         panel.repaint();
         panel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -413,7 +579,7 @@ public class Main {
                         }catch (Exception exception){
                             exception.printStackTrace();
                         }
-                        createResult(textField.getText().replace("\n",""),defi);
+                        createResultForSearch(textField.getText().replace("\n",""),defi);
                         textField.setText("");
                         f.pack();
                     }
@@ -461,7 +627,7 @@ public class Main {
                     catch(Exception exception){
                         exception.printStackTrace();
                     }
-                    createResult(textField.getText(),defi);
+                    createResultForSearch(textField.getText(),defi);
                 }
             }
             if(s.equals("History")){
