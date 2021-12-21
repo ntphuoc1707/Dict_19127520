@@ -43,11 +43,16 @@ class SDict{
 public class Main {
     public static SDict dict=new SDict();
     static JFrame f=new JFrame("Dictionary");
+    public static int w=200;
+    public static int h=200;
     public static void createAndShowMenu(){
+        w=f.getWidth();
+        h=f.getHeight();
         f.dispose();
         f=new JFrame("Dictionary");
         f.setMinimumSize(new Dimension(500,500));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setPreferredSize(new Dimension(w,h));
         JPanel p=new JPanel();
         p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
         p.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -74,11 +79,11 @@ public class Main {
         button3.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(button3);
         p.add(Box.createRigidArea(new Dimension(0,5)));
-//
-//        JButton button4=new JButton("Delete word");
-//        button4.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        p.add(button4);
-//        p.add(Box.createRigidArea(new Dimension(0,5)));
+
+        JButton button4=new JButton("Reset dictionary");
+        button4.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button4);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
 
         JButton button5=new JButton("Exit");
         button5.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -95,13 +100,22 @@ public class Main {
             else if(s.equals("Edit word")){
                 createAndShowEditWord();
             }
+            else if(s.equals("Reset dictionary")){
+                ResetData();
+                SaveData();
+                JOptionPane.showMessageDialog(f,"Reset successfully",null,JOptionPane.INFORMATION_MESSAGE);
+            }
+            else if(s.equals("Exit")){
+                SaveData();
+                f.dispose();
+            }
         };
 
         button1.addActionListener(y);
         button2.addActionListener(y);
         button3.addActionListener(y);
-//        button4.addActionListener(y);
-//        button5.addActionListener(y);
+        button4.addActionListener(y);
+        button5.addActionListener(y);
         SpringLayout layout=new SpringLayout();
         JPanel middle=new JPanel();
         middle.setLayout(layout);
@@ -131,7 +145,6 @@ public class Main {
                 break;
             }
         }
-        final boolean[] act = {false};
         if(have){
             JLabel label=new JLabel(input.toUpperCase(Locale.ROOT)+":    ");
             label.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -196,9 +209,7 @@ public class Main {
                         }
                         if(check){
                             int r=JOptionPane.showConfirmDialog(f,"If you leave it blank, you will delete its meaning. If the word has no meaning, it will be deleted"+'\n'+"Do you wanna save?","Message",JOptionPane.YES_NO_OPTION);
-                            if(r==JOptionPane.YES_OPTION){
-                                createAndShowEditWord();
-                            }
+
                             if(r==JOptionPane.NO_OPTION){
                                 return;
                             }
@@ -216,6 +227,7 @@ public class Main {
                             dict.slag.remove(finalPos);
                             dict.meaning.remove(finalPos);
                         }
+                        SaveData();
                         createAndShowEditWord();
                     }
                     else if(s.equals("Cancel")){
@@ -238,8 +250,11 @@ public class Main {
         mp.add(label);
     }
     public static void createAndShowEditWord(){
+        w=f.getWidth();
+        h=f.getHeight();
         f.dispose();
         f=new JFrame("Edit word");
+        f.setPreferredSize(new Dimension(w,h));
         f.setMinimumSize(new Dimension(500,100));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new BorderLayout());
@@ -277,8 +292,11 @@ public class Main {
     }
 
     public static void createAndShowAddWord(){
+        w=f.getWidth();
+        h=f.getHeight();
         f.dispose();
         f=new JFrame("Add slang word");
+        f.setPreferredSize(new Dimension(w,h));
         JFrame.setDefaultLookAndFeelDecorated(true);
         f.setMinimumSize(new Dimension(850,250));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -363,6 +381,7 @@ public class Main {
                                     String str=e.getActionCommand();
                                     if(str.equals("Duplicate")){
                                         dict.meaning.elementAt(finalI).add(_defi.getText());
+                                        SaveData();
                                         dialog.dispose();
                                         JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
                                         _slang.setText("");
@@ -373,6 +392,7 @@ public class Main {
                                         Vector<String> t=new Vector<>();
                                         t.add(_defi.getText());
                                         dict.meaning.setElementAt(t, finalI1);
+                                        SaveData();
                                         dialog.dispose();
                                         JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
                                         _slang.setText("");
@@ -389,8 +409,17 @@ public class Main {
                             cancel.addActionListener(x);
                             dialog.pack();
                             dialog.setVisible(true);
+                            return;
                         }
                     }
+                    dict.slag.add(_slang.getText());
+                    Vector<String> vector=new Vector<>();
+                    vector.add(_defi.getText());
+                    dict.meaning.add(vector);
+                    SaveData();
+                    JOptionPane.showMessageDialog(f,"Add word successfully",null,JOptionPane.INFORMATION_MESSAGE);
+                    _slang.setText("");
+                    _defi.setText("");
                 }
                 if(s.equals("Return")){
                     createAndShowMenu();
@@ -506,9 +535,11 @@ public class Main {
     static Vector<String> history=new Vector<>();
     public static String status_search="slang";
     public static void createAndShowSearch(){
-
+        w=f.getWidth();
+        h=f.getHeight();
         f.dispose();
         f=new JFrame("Search");
+        f.setPreferredSize(new Dimension(w,h));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setMinimumSize(new Dimension(700,300));
         f.setLayout(new FlowLayout());
@@ -633,16 +664,34 @@ public class Main {
             if(s.equals("History")){
                 JList<String> list=new JList(history.toArray());
                 JScrollPane pane1=new JScrollPane(list);
-
                 JDialog dialog=new JDialog(f,"Searched Slang Word History",true);
                 dialog.setLayout(new BorderLayout());
-                Dimension Size = Toolkit.getDefaultToolkit().getScreenSize();
+                dialog.setMinimumSize(new Dimension(400,200));
                 dialog.setLocation(f.getWidth()/2-100,f.getHeight()/2-100);
                 dialog.add(pane1,BorderLayout.CENTER);
                 JPanel panel=new JPanel();
                 panel.setLayout(new FlowLayout());
                 panel.add(button);
+                JButton button1=new JButton("Clear history");
+                button1.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(button1);
                 dialog.add(panel,BorderLayout.PAGE_END);
+                button1.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        history=new Vector<>();
+                        try {
+                            File file=new File("history.txt");
+                            BufferedWriter bw=new BufferedWriter(new FileWriter(file));
+                            bw.write("");
+                            bw.close();
+                        }
+                        catch (Exception exception){
+                            exception.printStackTrace();
+                        }
+                        dialog.dispose();
+                    }
+                });
                 button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -670,10 +719,68 @@ public class Main {
         f.pack();
         f.setVisible(true);
     }
+    public static void SaveData(){
+        try{
+            File file=new File("slang_current.txt");
+            BufferedWriter bw=new BufferedWriter(new FileWriter(file));
+            for(int i=0;i<dict.slag.size();i++){
+                String str=dict.slag.elementAt(i)+"`";
+                for(int j=0;j<dict.meaning.elementAt(i).size();j++) {
+                    if(j==dict.meaning.elementAt(i).size()-1){
+                        str+=dict.meaning.elementAt(i).elementAt(j);
+                    }
+                    else{
+                        str+=dict.meaning.elementAt(i).elementAt(j)+"|";
+                    }
+                }
+                bw.write(str+"\n");
+            }
+            file=new File("history.txt");
+            bw=new BufferedWriter(new FileWriter(file));
+            for(int i=0;i<history.size();i++){
+                bw.write(history.elementAt(i)+"\n");
+            }
+            bw.close();
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+    }
+    public static void ResetData(){
+        try{
+            dict=new SDict();
+            File file = new File("slang.txt");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String current="";
+            String line = reader.readLine();
+            line = reader.readLine();
+            while (line != null) {
+                String[] t=line.split("`");
+                if(t.length==2){
+                    String[] o=t[1].split("\\| ");
+                    if(o.length==1) o=t[1].split(" \\|");
+                    if(o.length==1) o=t[1].split("\\|");
+                    for (String s : o) dict.add(t[0], s);
+                }
+                else{
+                    String[] o=line.split("\\| ");
+                    if(o.length==1) o=line.split(" \\|");
+                    if(o.length==1) o=line.split("\\|");
+                    for (String s : o) dict.add(current, s);
+                }
+                current=t[0];
+                line = reader.readLine();
+            }
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+    }
 
     public static void LoadData(){
         try{
-            File file = new File("slang.txt");
+            dict=new SDict();
+            File file = new File("slang_current.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String current="";
             String line = reader.readLine();
@@ -714,11 +821,5 @@ public class Main {
     JFrame.setDefaultLookAndFeelDecorated(true);
     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     createAndShowMenu();
-    try{
-
-
-    }catch (Exception exception){
-        exception.printStackTrace();
-    }
     }
 }
