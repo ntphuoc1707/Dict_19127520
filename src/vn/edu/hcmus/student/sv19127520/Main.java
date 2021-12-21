@@ -47,6 +47,7 @@ public class Main {
         f.dispose();
         f=new JFrame("Dictionary");
         f.setMinimumSize(new Dimension(500,500));
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel p=new JPanel();
         p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
         p.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -198,12 +199,16 @@ public class Main {
         }
 
     }
+    static Vector<String> history=new Vector<>();
     public static String status_search="slang";
     public static void createAndShowSearch(){
+
         f.dispose();
         f=new JFrame("Search");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setMinimumSize(new Dimension(700,300));
         f.setLayout(new FlowLayout());
+
 
         JPanel left=new JPanel();
         left.setLayout(new BoxLayout(left,BoxLayout.Y_AXIS));
@@ -228,12 +233,16 @@ public class Main {
         swtch.setAlignmentX(Component.CENTER_ALIGNMENT);
         JButton find=new JButton("Find");
         find.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton his=new JButton("History");
+        his.setAlignmentX(Component.CENTER_ALIGNMENT);
         JButton retrn=new JButton("Return");
         retrn.setAlignmentX(Component.CENTER_ALIGNMENT);
         center.add(Box.createRigidArea(new Dimension(0,50)));
         center.add(swtch);
         center.add(Box.createRigidArea(new Dimension(0,50)));
         center.add(find);
+        center.add(Box.createRigidArea(new Dimension(0,50)));
+        center.add(his);
         center.add(Box.createRigidArea(new Dimension(0,50)));
         center.add(retrn);
 
@@ -256,6 +265,16 @@ public class Main {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (textField.getText().length() > 0) {
+                        try{
+                            history.add(textField.getText());
+                            File file=new File("history.txt");
+                            FileWriter fw=new FileWriter(file.getAbsoluteFile(),true);
+                            BufferedWriter bw=new BufferedWriter(fw);
+                            bw.write(textField.getText()+"\n");
+                            bw.close();
+                        }catch (Exception exception){
+                            exception.printStackTrace();
+                        }
                         createResult(textField.getText().replace("\n",""),defi);
                         textField.setText("");
                         f.pack();
@@ -264,6 +283,9 @@ public class Main {
             }
         });
 
+
+        JButton button=new JButton("Close");
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         ActionListener y= e -> {
             String s=e.getActionCommand();
             if(s.equals("Switch")){
@@ -288,9 +310,46 @@ public class Main {
             }
             if(s.equals("Find")){
                 if(textField.getText().length()>0) {
+                    try{
+                        if(status_search.equals("slang")){
+                            history.add(textField.getText());
+                            File file=new File("history.txt");
+                            FileWriter fw=new FileWriter(file.getAbsoluteFile(),true);
+                            BufferedWriter bw=new BufferedWriter(fw);
+                            bw.write(textField.getText()+"\n");
+                            bw.close();
+                        }
+                    }
+                    catch(Exception exception){
+                        exception.printStackTrace();
+                    }
                     createResult(textField.getText(),defi);
                 }
             }
+            if(s.equals("History")){
+                JList<String> list=new JList(history.toArray());
+                JScrollPane pane1=new JScrollPane(list);
+
+                JDialog dialog=new JDialog(f,"History",true);
+                dialog.setLayout(new BorderLayout());
+                Dimension Size = Toolkit.getDefaultToolkit().getScreenSize();
+                System.out.println("X: "+f.getWidth()+", Y: "+f.getHeight());
+                dialog.setLocation(f.getWidth()/2-100,f.getHeight()/2-100);
+                dialog.add(pane1,BorderLayout.CENTER);
+                JPanel panel=new JPanel();
+                panel.setLayout(new FlowLayout());
+                panel.add(button);
+                dialog.add(panel,BorderLayout.PAGE_END);
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose();
+                    }
+                });
+                dialog.setSize(new Dimension(200,200));
+                dialog.setVisible(true);
+            }
+
             if(s.equals("Return")){
                 createAndShowMenu();
             }
@@ -300,7 +359,7 @@ public class Main {
         swtch.addActionListener(y);
         find.addActionListener(y);
         retrn.addActionListener(y);
-        
+        his.addActionListener(y);
         f.add(left);
         f.add(center);
         f.add(right);
@@ -333,6 +392,14 @@ public class Main {
                 current=t[0];
                 line = reader.readLine();
             }
+            file=new File("history.txt");
+            reader=new BufferedReader(new FileReader(file));
+            line=reader.readLine();
+            while(line!=null){
+                if(line.length()>0)
+                    history.add(line);
+                line=reader.readLine();
+            }
             dict.show();
         }
         catch (Exception exception){
@@ -344,5 +411,11 @@ public class Main {
     JFrame.setDefaultLookAndFeelDecorated(true);
     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     createAndShowMenu();
+    try{
+
+
+    }catch (Exception exception){
+        exception.printStackTrace();
+    }
     }
 }
