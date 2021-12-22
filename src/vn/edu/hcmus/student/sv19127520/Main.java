@@ -8,6 +8,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
+import java.util.Random;
 
 class SDict{
     Vector<String> slag;
@@ -85,7 +86,11 @@ public class Main {
         p.add(button4);
         p.add(Box.createRigidArea(new Dimension(0,5)));
 
-        JButton button5=new JButton("Exit");
+//        JButton button5=new JButton("Exit");
+//        button5.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        p.add(button5);
+
+        JButton button5=new JButton("Slang word for today");
         button5.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(button5);
 
@@ -109,8 +114,42 @@ public class Main {
                 SaveData();
                 f.dispose();
             }
+            else if(s.equals("Slang word for today")){
+                JDialog dialog=new JDialog(f,"Slang word for today",true);
+                dialog.setLayout(new BorderLayout());
+                dialog.setMinimumSize(new Dimension(400,200));
+                dialog.setLocation(f.getWidth()/2-100,f.getHeight()/2-100);
+                JPanel jPanel=new JPanel();
+                jPanel.setLayout(new FlowLayout());
+                Random rand=new Random();
+                int pos=rand.nextInt(dict.slag.size()-1);
+                JLabel label=new JLabel(dict.slag.elementAt(pos)+": ");
+                label.setFont(new Font("Verdana",Font.BOLD,20));
+                jPanel.add(label);
+                JPanel panel=new JPanel();
+                panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+                for(int i=0;i<dict.meaning.elementAt(pos).size();i++){
+                    JLabel label1=new JLabel("- "+dict.meaning.elementAt(pos).elementAt(i));
+                    label1.setFont(new Font("Verdana",Font.PLAIN,17));
+                    panel.add(label1);
+                }
+                jPanel.add(panel);
+                dialog.add(jPanel,BorderLayout.CENTER);
+                JPanel panel1=new JPanel();
+                panel1.setLayout(new FlowLayout());
+                JButton button=new JButton("OK");
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose();
+                    }
+                });
+                panel1.add(button);
+                dialog.add(panel1,BorderLayout.PAGE_END);
+                dialog.pack();
+                dialog.setVisible(true);
+            }
         };
-
         button1.addActionListener(y);
         button2.addActionListener(y);
         button3.addActionListener(y);
@@ -290,7 +329,6 @@ public class Main {
         f.setVisible(true);
 
     }
-
     public static void createAndShowAddWord(){
         w=f.getWidth();
         h=f.getHeight();
@@ -339,17 +377,20 @@ public class Main {
         panel.add(slang);
         panel.add(defi);
         panel.add(button);
-        JButton dup=new JButton("Duplicate");
-        JButton ovw=new JButton("Overwrite");
-        JButton cancel=new JButton("Cancel");
+
         ActionListener y=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String s=e.getActionCommand();
                 if(s.equals("ADD")){
+                    boolean check=false;
                     String input=_slang.getText().toUpperCase(Locale.ROOT);
                     for (int i = 0; i < dict.slag.size(); i++) {
                         if (dict.slag.elementAt(i).equals(input)) {
+                            JButton dup=new JButton("Duplicate");
+                            JButton ovw=new JButton("Overwrite");
+                            JButton cancel=new JButton("Cancel");
+                            check=true;
                             JDialog dialog=new JDialog(f,"Message",true);
                             dialog.setLayout(new BorderLayout());
                             dialog.setSize(new Dimension(200,200));
@@ -374,7 +415,6 @@ public class Main {
                             panel1.add(cancel);
                             dialog.add(panel1,BorderLayout.PAGE_END);
                             int finalI = i;
-                            int finalI1 = i;
                             ActionListener x=new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
@@ -386,18 +426,16 @@ public class Main {
                                         JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
                                         _slang.setText("");
                                         _defi.setText("");
-                                        return;
                                     }
                                     if(str.equals("Overwrite")){
                                         Vector<String> t=new Vector<>();
                                         t.add(_defi.getText());
-                                        dict.meaning.setElementAt(t, finalI1);
+                                        dict.meaning.setElementAt(t, finalI);
                                         SaveData();
                                         dialog.dispose();
                                         JOptionPane.showMessageDialog(f,"Successful",null,JOptionPane.INFORMATION_MESSAGE);
                                         _slang.setText("");
                                         _defi.setText("");
-                                        return;
                                     }
                                     if(str.equals("Cancel")){
                                         dialog.dispose();
@@ -409,17 +447,18 @@ public class Main {
                             cancel.addActionListener(x);
                             dialog.pack();
                             dialog.setVisible(true);
-                            return;
                         }
                     }
-                    dict.slag.add(_slang.getText());
-                    Vector<String> vector=new Vector<>();
-                    vector.add(_defi.getText());
-                    dict.meaning.add(vector);
-                    SaveData();
-                    JOptionPane.showMessageDialog(f,"Add word successfully",null,JOptionPane.INFORMATION_MESSAGE);
-                    _slang.setText("");
-                    _defi.setText("");
+                    if(!check) {
+                        dict.slag.add(_slang.getText());
+                        Vector<String> vector = new Vector<>();
+                        vector.add(_defi.getText());
+                        dict.meaning.add(vector);
+                        SaveData();
+                        JOptionPane.showMessageDialog(f, "Add word successfully", null, JOptionPane.INFORMATION_MESSAGE);
+                        _slang.setText("");
+                        _defi.setText("");
+                    }
                 }
                 if(s.equals("Return")){
                     createAndShowMenu();
@@ -517,13 +556,19 @@ public class Main {
                 }
                 JList l = new JList(str.toArray());
                 JScrollPane pane = new JScrollPane(l);
-                System.out.println("Max: "+max);
-                if(words>40)
-                    panel.setPreferredSize(new Dimension(max*10,700));
+                if(words>40) {
+                    panel.setPreferredSize(new Dimension(700, 700));
+                    if(f.getWidth()<1300||f.getHeight()<800)
+                        f.setPreferredSize(new Dimension(1300,800));
+                    else{
+                        f.setPreferredSize(new Dimension(f.getWidth(),f.getHeight()));
+                    }
+                }
                 else{
                     panel.setPreferredSize(new Dimension(max*10,words*20));
                 }
                 panel.add(pane);
+
             }
         }
         if(!have) {
@@ -776,7 +821,6 @@ public class Main {
             exception.printStackTrace();
         }
     }
-
     public static void LoadData(){
         try{
             dict=new SDict();
