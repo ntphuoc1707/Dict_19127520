@@ -71,10 +71,24 @@ class SDict{
         }
     }
 }
+
+/**
+ * Main class
+ */
 public class Main {
-    public static SDict dict=new SDict();               //Slang dictionary
+    /**
+     * Slang dictionary
+     */
+    public static SDict dict=new SDict();
     static JFrame f=new JFrame("Dictionary");       //Main Frame
+    /**
+     * width of frame
+     */
     public static int w=200;                            //width of Frame
+
+    /**
+     *height of frame
+     */
     public static int h=200;                            //Height of Frame
 
     /**
@@ -264,10 +278,16 @@ public class Main {
                         String input=textField.getText().toUpperCase(Locale.ROOT);
                         for(int i=0;i<dict.slag.size();i++){
                             if(dict.slag.elementAt(i).equals(input)){
-                                dict.slag.remove(i);
-                                dict.meaning.remove(i);
-                                JOptionPane.showMessageDialog(f,"Delete Successfully",null,JOptionPane.INFORMATION_MESSAGE);
-                                textField.setText("");
+                                int r=JOptionPane.showConfirmDialog(f,"Are you sure?",null,JOptionPane.YES_NO_OPTION);
+                                if(r==JOptionPane.YES_OPTION) {
+                                    dict.slag.remove(i);
+                                    dict.meaning.remove(i);
+                                    JOptionPane.showMessageDialog(f,"Delete Successfully",null,JOptionPane.INFORMATION_MESSAGE);
+                                    textField.setText("");
+                                }
+                                if(r==JOptionPane.NO_OPTION){
+
+                                }
                                 return;
                             }
                         }
@@ -296,7 +316,7 @@ public class Main {
 
     /**
      * Create result when play game
-     * @param panel
+     * @param panel JPanel
      */
     public static void createResultForPlayGame(JPanel panel){
         panel.removeAll();
@@ -468,8 +488,8 @@ public class Main {
 
     /**
      * Create result of Edit function
-     * @param input
-     * @param mp
+     * @param input string
+     * @param mp jpanel
      */
     public static void createResultForEdit(String input, JPanel mp){
         mp.removeAll();
@@ -813,8 +833,8 @@ public class Main {
 
     /**
      * Create result of search function
-     * @param input
-     * @param panel
+     * @param input string
+     * @param panel jpanel
      */
     public static void createResultForSearch(String input, JPanel panel){
         panel.removeAll();
@@ -1231,7 +1251,7 @@ public class Main {
 
     /**
      * Main function
-     * @param args
+     * @param args string[]
      */
     public static void main(String[] args) {
 	    LoadData();
