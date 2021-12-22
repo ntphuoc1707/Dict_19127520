@@ -1,22 +1,42 @@
 package vn.edu.hcmus.student.sv19127520;
 
 import javax.swing.*;
-import javax.xml.validation.SchemaFactoryConfigurationError;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Random;
 class SDict{
     Vector<String> slag;
     Vector<Vector<String>> meaning;
+
+    /**
+     * init method
+     */
     SDict(){
         slag=new Vector<>();
         meaning=new Vector<>();
     }
+
+    /**
+     * Add element with vector
+     * @param s
+     * @param str
+     */
+    public void add(String s,Vector<String> str){
+        slag.add(s);
+        meaning.add(str);
+    }
+
+    /**
+     * Add element with string
+     * @param s
+     * @param m
+     */
     public void add(String s,String m){
         for(int i=0;i<slag.size();i++){
             if(slag.elementAt(i).equals(s)){
@@ -32,6 +52,10 @@ class SDict{
         t.add(m);
         meaning.add(t);
     }
+
+    /**
+     * Display dictionary
+     */
     public void show(){
         for(int i=0;i<slag.size();i++) {
             System.out.print(slag.elementAt(i) + ": ");
@@ -42,10 +66,14 @@ class SDict{
     }
 }
 public class Main {
-    public static SDict dict=new SDict();
-    static JFrame f=new JFrame("Dictionary");
-    public static int w=200;
-    public static int h=200;
+    public static SDict dict=new SDict();               //Slang dictionary
+    static JFrame f=new JFrame("Dictionary");       //Main Frame
+    public static int w=200;                            //width of Frame
+    public static int h=200;                            //Height of Frame
+
+    /**
+     * Show menu screen
+     */
     public static void createAndShowMenu(){
         w=f.getWidth();
         h=f.getHeight();
@@ -166,6 +194,9 @@ public class Main {
                 score=0;
                 createAndShowPlayGame();
             }
+            else if(s.equals("Delete word")){
+                createAndShowDeleteWord();
+            }
         };
         button1.addActionListener(y);
         button2.addActionListener(y);
@@ -186,6 +217,73 @@ public class Main {
         f.setVisible(true);
 
     }
+
+    /**
+     * Show delete slang word screen
+     */
+    public static void createAndShowDeleteWord(){
+        JDialog dialog=new JDialog(f,"Delete word",true);
+        dialog.setLayout(new FlowLayout());
+        dialog.setMinimumSize(new Dimension(400,150));
+        dialog.setLocation(f.getWidth()/2-100,f.getHeight()/2-100);
+
+        JPanel panel=new JPanel();
+        panel.setLayout(new FlowLayout());
+        JLabel label=new JLabel("Slang word: ");
+        label.setFont(new Font("Verdana",Font.BOLD,20));
+        panel.add(label);
+        JTextField textField=new JTextField("",15);
+        textField.setFont(new Font("Verdana",Font.PLAIN,15));
+        panel.add(textField);
+
+        JPanel panel1=new JPanel();
+        panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
+        panel1.add(panel);
+
+        JPanel panel2=new JPanel();
+        panel2.setLayout(new FlowLayout());
+        JButton button=new JButton("Delete");
+        JButton button1=new JButton("Cancel");
+        ActionListener y=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s=e.getActionCommand();
+                if(s.equals("Delete")){
+                    if(textField.getText().length()>0){
+                        String input=textField.getText().toUpperCase(Locale.ROOT);
+                        for(int i=0;i<dict.slag.size();i++){
+                            if(dict.slag.elementAt(i).equals(input)){
+                                dict.slag.remove(i);
+                                dict.meaning.remove(i);
+                                JOptionPane.showMessageDialog(f,"Delete Successfully",null,JOptionPane.INFORMATION_MESSAGE);
+                                textField.setText("");
+                                return;
+                            }
+                        }
+                        JOptionPane.showMessageDialog(f,"Slang word does not exist",null,JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+                if(s.equals("Cancel")){
+                    dialog.dispose();
+                }
+            }
+        };
+        button.addActionListener(y);
+        button1.addActionListener(y);
+
+
+        panel2.add(button);
+        panel2.add(button1);
+        panel1.add(panel2);
+        dialog.add(panel1);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Create result when play game
+     * @param panel
+     */
     public static void createResultForPlayGame(JPanel panel){
         panel.removeAll();
         panel.repaint();
@@ -273,8 +371,12 @@ public class Main {
         panel.add(Box.createRigidArea(new Dimension(0,50)));
         f.pack();
     }
-    public static String status_game;
-    public static int score=0;
+    public static String status_game;               //Type game, guess base on slang or definition
+    public static int score=0;                      //Score of player
+
+    /**
+     * Show play game screen
+     */
     public static void createAndShowPlayGame(){
         w=f.getWidth();
         h=f.getHeight();
@@ -338,6 +440,12 @@ public class Main {
         f.setVisible(true);
 
     }
+
+    /**
+     * Create result of Edit function
+     * @param input
+     * @param mp
+     */
     public static void createResultForEdit(String input, JPanel mp){
         mp.removeAll();
         mp.repaint();
@@ -382,11 +490,12 @@ public class Main {
                 if(result.elementAt(i).length()>700)
                     scrollPane.setPreferredSize(new Dimension(1000,150));
                 else
-                    if(result.elementAt(i).length()<=100)
-                        scrollPane.setPreferredSize(new Dimension(result.elementAt(i).length()*10,23));
-                    else
-                        scrollPane.setPreferredSize(new Dimension(1000,23+(result.elementAt(i).length()/100)*23));
-                Vector<String> finalResult = result;
+                    if(result.elementAt(i).length()<=10)
+                        scrollPane.setPreferredSize(new Dimension(result.elementAt(i).length()*20,23));
+                    else {
+                        scrollPane.setPreferredSize(new Dimension(1000, 23 + (result.elementAt(i).length() / 100) * 23));
+                        f.setPreferredSize(new Dimension(1300,500));
+                    }
                 int finalI = i;
                 textFields[i].addKeyListener(new KeyAdapter() {
                     @Override
@@ -397,6 +506,7 @@ public class Main {
                         else{
                             scrollPane.setPreferredSize(new Dimension(1000,23+(textFields[finalI].getText().length()/100)*23 ));
                         }
+                        f.setPreferredSize(new Dimension(1300,500));
                         mp.remove(panel11);
                         mp.add(panel11,BorderLayout.CENTER);
                         f.pack();
@@ -420,11 +530,11 @@ public class Main {
                         }
                         if(check){
                             int r=JOptionPane.showConfirmDialog(f,"If you leave it blank, you will delete its meaning. If the word has no meaning, it will be deleted"+'\n'+"Do you wanna save?","Message",JOptionPane.YES_NO_OPTION);
-
                             if(r==JOptionPane.NO_OPTION){
                                 return;
                             }
                         }
+                        JOptionPane.showMessageDialog(f,"Edit Successfully",null,JOptionPane.INFORMATION_MESSAGE);
                         for(int i = 0; i<dict.meaning.elementAt(finalPos).size(); i++){
                             if(textFields[i].getText().length()==0) {
                                 dict.meaning.elementAt(finalPos).remove(k);
@@ -460,6 +570,10 @@ public class Main {
         mp.setLayout(new FlowLayout());
         mp.add(label);
     }
+
+    /**
+     * Show edit word screen
+     */
     public static void createAndShowEditWord(){
         w=f.getWidth();
         h=f.getHeight();
@@ -501,6 +615,10 @@ public class Main {
         f.setVisible(true);
 
     }
+
+    /**
+     * Show add word screen
+     */
     public static void createAndShowAddWord(){
         w=f.getWidth();
         h=f.getHeight();
@@ -622,10 +740,9 @@ public class Main {
                         }
                     }
                     if(!check) {
-                        dict.slag.add(_slang.getText());
                         Vector<String> vector = new Vector<>();
                         vector.add(_defi.getText());
-                        dict.meaning.add(vector);
+                        dict.add(_slang.getText(),vector);
                         SaveData();
                         JOptionPane.showMessageDialog(f, "Add word successfully", null, JOptionPane.INFORMATION_MESSAGE);
                         _slang.setText("");
@@ -655,6 +772,12 @@ public class Main {
         f.pack();
         f.setVisible(true);
     }
+
+    /**
+     * Create result of search function
+     * @param input
+     * @param panel
+     */
     public static void createResultForSearch(String input, JPanel panel){
         panel.removeAll();
         panel.repaint();
@@ -718,6 +841,7 @@ public class Main {
             if(!have) {
                 panel.setPreferredSize(new Dimension(200,200));
                 panel.add(new JLabel("!!! No result !!!"));
+                return;
             }
             else {
                 Vector<String> str = new Vector<>(x);
@@ -749,8 +873,12 @@ public class Main {
         }
 
     }
-    static Vector<String> history=new Vector<>();
-    public static String status_search="slang";
+    static Vector<String> history=new Vector<>();           //slang word was searched
+    public static String status_search="slang";             //Search by slang word or definition
+
+    /**
+     * Show search screen
+     */
     public static void createAndShowSearch(){
         w=f.getWidth();
         h=f.getHeight();
@@ -936,10 +1064,16 @@ public class Main {
         f.pack();
         f.setVisible(true);
     }
+
+    /**
+     * Save data
+     */
     public static void SaveData(){
         try{
+            System.out.println("Size Save: "+dict.slag.size());
             File file=new File("slang_current.txt");
             BufferedWriter bw=new BufferedWriter(new FileWriter(file));
+            FileOutputStream os=new FileOutputStream(file);
             for(int i=0;i<dict.slag.size();i++){
                 String str=dict.slag.elementAt(i)+"`";
                 for(int j=0;j<dict.meaning.elementAt(i).size();j++) {
@@ -950,8 +1084,9 @@ public class Main {
                         str+=dict.meaning.elementAt(i).elementAt(j)+"|";
                     }
                 }
-                bw.write(str+"\n");
+                os.write((str+"\n").getBytes(StandardCharsets.UTF_8));
             }
+            os.close();
             file=new File("history.txt");
             bw=new BufferedWriter(new FileWriter(file));
             for(int i=0;i<history.size();i++){
@@ -963,6 +1098,10 @@ public class Main {
             exception.printStackTrace();
         }
     }
+
+    /**
+     * Reset data into root data
+     */
     public static void ResetData(){
         try{
             dict=new SDict();
@@ -993,6 +1132,10 @@ public class Main {
             exception.printStackTrace();
         }
     }
+
+    /**
+     * Load data
+     */
     public static void LoadData(){
         try{
             dict=new SDict();
@@ -1026,14 +1169,19 @@ public class Main {
                     history.add(line);
                 line=reader.readLine();
             }
-            //dict.show();
+            System.out.println("Load Size: "+dict.slag.size());
+            dict.show();
         }
         catch (Exception exception){
             exception.printStackTrace();
         }
     }
-    public static void main(String[] args) {
 
+    /**
+     * Main function
+     * @param args
+     */
+    public static void main(String[] args) {
 	    LoadData();
         JFrame.setDefaultLookAndFeelDecorated(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
