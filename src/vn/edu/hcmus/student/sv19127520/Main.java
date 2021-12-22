@@ -28,6 +28,12 @@ class SDict{
      * @param str
      */
     public void add(String s,Vector<String> str){
+        for(int i=0;i<slag.size();i++){
+            if(slag.elementAt(i).equals(s)){
+                meaning.elementAt(i).addAll(str);
+                return;
+            }
+        }
         slag.add(s);
         meaning.add(str);
     }
@@ -86,12 +92,12 @@ public class Main {
         p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
         p.setAlignmentY(Component.CENTER_ALIGNMENT);
         JLabel j=new JLabel("SLANG DICTIONARY");
-        j.setFont(new Font("Verdana",Font.BOLD,30));
+        j.setFont(new Font("Verdana",Font.BOLD,40));
         j.setForeground(Color.red);
         j.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(j);
         p.add(Box.createRigidArea(new Dimension(0,100)));
-       // p.setBackground(Color.getHSBColor(0.5f,0.591f,0.922f));
+        p.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
 
 
         JButton button1=new JButton("Search");
@@ -169,12 +175,14 @@ public class Main {
                 jPanel.add(label);
                 JPanel panel=new JPanel();
                 panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+                panel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
                 for(int i=0;i<dict.meaning.elementAt(pos).size();i++){
                     JLabel label1=new JLabel("- "+dict.meaning.elementAt(pos).elementAt(i));
                     label1.setFont(new Font("Verdana",Font.PLAIN,17));
                     panel.add(label1);
                 }
                 jPanel.add(panel);
+                jPanel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
                 dialog.add(jPanel,BorderLayout.CENTER);
                 JPanel panel1=new JPanel();
                 panel1.setLayout(new FlowLayout());
@@ -185,6 +193,7 @@ public class Main {
                         dialog.dispose();
                     }
                 });
+                panel1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
                 panel1.add(button);
                 dialog.add(panel1,BorderLayout.PAGE_END);
                 dialog.pack();
@@ -212,6 +221,7 @@ public class Main {
         middle.add(p);
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER,p,0,SpringLayout.HORIZONTAL_CENTER,middle);
         layout.putConstraint(SpringLayout.VERTICAL_CENTER,p,0,SpringLayout.VERTICAL_CENTER,middle);
+        middle.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.add(middle);
         f.pack();
         f.setVisible(true);
@@ -239,6 +249,7 @@ public class Main {
         JPanel panel1=new JPanel();
         panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
         panel1.add(panel);
+        panel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
 
         JPanel panel2=new JPanel();
         panel2.setLayout(new FlowLayout());
@@ -275,7 +286,10 @@ public class Main {
         panel2.add(button);
         panel2.add(button1);
         panel1.add(panel2);
+        panel2.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
+        panel1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         dialog.add(panel1);
+        dialog.getContentPane().setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         dialog.pack();
         dialog.setVisible(true);
     }
@@ -287,13 +301,14 @@ public class Main {
     public static void createResultForPlayGame(JPanel panel){
         panel.removeAll();
         panel.repaint();
-
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
         JPanel p1=new JPanel();
         p1.setLayout(new FlowLayout());
         JLabel _scr=new JLabel("Score: "+score);
         _scr.setFont(new Font("Verdana",Font.PLAIN,13));
+        _scr.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         p1.add(_scr);
+        p1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         panel.add(p1);
         Random rand=new Random();
         Vector<Integer> result=new Vector<>();
@@ -307,6 +322,7 @@ public class Main {
             int pos_meaning=rand.nextInt(dict.meaning.elementAt(result.elementAt(pos_correct)).size());
             JLabel label=new JLabel("Definition: "+"\""+dict.meaning.elementAt(result.elementAt(pos_correct)).elementAt(pos_meaning)+"\"");
             label.setFont(new Font("Verdana",Font.BOLD,15));
+            label.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
             panel.add(label);
             JButton[] buttons=new JButton[4];
             for(int i=0;i<4;i++){
@@ -339,6 +355,7 @@ public class Main {
         else if(status_game.equals("defi")){
             JLabel label=new JLabel("Slang word: "+"\""+dict.slag.elementAt(result.elementAt(pos_correct))+"\"");
             label.setFont(new Font("Verdana",Font.BOLD,15));
+            label.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
             panel.add(label);
             JButton[] buttons=new JButton[4];
             for(int i=0;i<4;i++){
@@ -369,6 +386,7 @@ public class Main {
             }
         }
         panel.add(Box.createRigidArea(new Dimension(0,50)));
+        f.getContentPane().setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.pack();
     }
     public static String status_game;               //Type game, guess base on slang or definition
@@ -385,16 +403,20 @@ public class Main {
         //f.setPreferredSize(new Dimension(w,h));
         f.setMinimumSize(new Dimension(500,100));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         JPanel panel=new JPanel();
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
         JLabel label=new JLabel("Guess:");
         label.setFont(new Font("Verdana",Font.ITALIC,20));
+        label.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         JPanel p=new JPanel();
         p.setLayout(new FlowLayout());
+        p.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         p.add(label);
         panel.add(p);
         JPanel buttons=new JPanel();
         buttons.setLayout(new FlowLayout());
+        buttons.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         JButton button=new JButton("Slang");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         JButton button1=new JButton("Definition");
@@ -403,6 +425,7 @@ public class Main {
         buttons.add(button1);
         panel.add(buttons);
         JPanel panel1=new JPanel();
+        panel1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         panel.add(panel1);
         ActionListener y=new ActionListener() {
             @Override
@@ -433,8 +456,10 @@ public class Main {
         panel2.add(panel);
         JPanel panel3=new JPanel();
         panel3.setLayout(new FlowLayout());
+        panel3.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         panel3.add(retrn);
         panel.add(panel3);
+        panel2.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.add(panel2);
         f.pack();
         f.setVisible(true);
@@ -453,6 +478,7 @@ public class Main {
         input=input.toUpperCase(Locale.ROOT);
         JPanel panel=new JPanel();
         panel.setLayout(new FlowLayout());
+        panel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         Vector<String> result=new Vector<>();
         boolean have=false;
         int pos=0;
@@ -476,8 +502,10 @@ public class Main {
             JButton cancel=new JButton("Cancel");
             panel11.add(save);
             panel11.add(cancel);
+            panel11.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
             JPanel panel1=new JPanel();
             panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
+            panel1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
             JTextArea[] textFields=new JTextArea[result.size()];
             for(int i=0;i<result.size();i++){
                 textFields[i]=new JTextArea();
@@ -561,6 +589,8 @@ public class Main {
             save.addActionListener(y);
             cancel.addActionListener(y);
             panel.add(panel1);
+            panel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
+
             mp.add(panel,BorderLayout.PAGE_START);
             f.pack();
             return;
@@ -568,6 +598,7 @@ public class Main {
         JLabel label=new JLabel("Don't have");
         label.setFont(new Font("Verdana",Font.ITALIC,13));
         mp.setLayout(new FlowLayout());
+        label.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         mp.add(label);
     }
 
@@ -585,6 +616,7 @@ public class Main {
         f.setLayout(new BorderLayout());
         JPanel p=new JPanel();
         p.setLayout(new FlowLayout());
+        p.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         p.add(new JLabel("Slang word: "));
         JTextField textField=new JTextField("",15);
         JButton button=new JButton("Find");
@@ -609,6 +641,7 @@ public class Main {
         };
         button.addActionListener(y);
         button1.addActionListener(y);
+        k.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.add(p,BorderLayout.PAGE_START);
         f.add(k,BorderLayout.CENTER);
         f.pack();
@@ -631,9 +664,11 @@ public class Main {
         f.setLayout(new BorderLayout());
         JPanel panel=new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        panel.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
 
         JPanel slang=new JPanel();
         slang.setLayout(new FlowLayout());
+        slang.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         JLabel l=new JLabel("Slang word:");
         l.setFont(new Font("Verdana",Font.PLAIN,20));
         slang.add(l);
@@ -649,6 +684,7 @@ public class Main {
 
         JPanel defi=new JPanel();
         defi.setLayout(new FlowLayout());
+        defi.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         JLabel l1=new JLabel("Definition:");
         l1.setFont(new Font("Verdana",Font.PLAIN,20));
         defi.add(l1);
@@ -742,7 +778,7 @@ public class Main {
                     if(!check) {
                         Vector<String> vector = new Vector<>();
                         vector.add(_defi.getText());
-                        dict.add(_slang.getText(),vector);
+                        dict.add(_slang.getText().toUpperCase(Locale.ROOT),vector);
                         SaveData();
                         JOptionPane.showMessageDialog(f, "Add word successfully", null, JOptionPane.INFORMATION_MESSAGE);
                         _slang.setText("");
@@ -760,10 +796,12 @@ public class Main {
         middle.add(panel);
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER,panel,0,SpringLayout.HORIZONTAL_CENTER,middle);
         layout.putConstraint(SpringLayout.VERTICAL_CENTER,panel,0,SpringLayout.VERTICAL_CENTER,middle);
+        middle.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.add(middle,BorderLayout.CENTER);
         JButton button1=new JButton("Return");
         JPanel panel1=new JPanel();
         panel1.setLayout(new FlowLayout());
+        panel1.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         panel1.add(button1);
 
         button.addActionListener(y);
@@ -795,13 +833,19 @@ public class Main {
             input=input.toUpperCase(Locale.ROOT);
             for (int i = 0; i < dict.slag.size(); i++) {
                 if (dict.slag.elementAt(i).equals(input)) {
+                    JPanel pp=new JPanel();
+                    pp.setLayout(new BoxLayout(pp,BoxLayout.Y_AXIS));
+                    pp.setBackground(Color.getHSBColor(0f,0.05f,0.859f));
                     have = true;
                     for (int j = 0; j < dict.meaning.elementAt(i).size(); j++) {
-                        panel.add(new JLabel(dict.meaning.elementAt(i).elementAt(j)));
+                        pp.add(new JLabel(dict.meaning.elementAt(i).elementAt(j)));
                         words++;
                         if(max<dict.meaning.elementAt(i).elementAt(j).length())
                             max=dict.meaning.elementAt(i).elementAt(j).length();
                     }
+                    JScrollPane pane1=new JScrollPane(pp);
+                    pane1.setMaximumSize(new Dimension(700,700));
+                    panel.add(pane1);
                 }
             }
         }
@@ -811,7 +855,7 @@ public class Main {
             for(int j=0;j<dict.meaning.size();j++){
                 for(int k=0;k<dict.meaning.elementAt(j).size();k++){
                     if(dict.meaning.elementAt(j).elementAt(k).toLowerCase(Locale.ROOT).equals(input)) {
-                        x.add(dict.slag.elementAt(j) + "  :  " + dict.meaning.elementAt(j).elementAt(k).toUpperCase(Locale.ROOT));
+                        x.add(dict.slag.elementAt(j) + "       :       " + dict.meaning.elementAt(j).elementAt(k).toUpperCase(Locale.ROOT));
                         have = true;
                         words++;
                         if(max<dict.meaning.elementAt(j).elementAt(k).length())
@@ -833,7 +877,7 @@ public class Main {
                         }
                         if(have1) {
                             words++;
-                            s.add(dict.slag.elementAt(j) + "  :  " + temp);
+                            s.add(dict.slag.elementAt(j) + "       :       " + temp);
                         }
                     }
                 }
@@ -845,13 +889,17 @@ public class Main {
             }
             else {
                 Vector<String> str = new Vector<>(x);
+                JPanel pp=new JPanel();
+                pp.setLayout(new BoxLayout(pp,BoxLayout.Y_AXIS));
+                pp.setBackground(Color.getHSBColor(0f,0.05f,0.859f));
                 for (String i : s) {
                     System.out.println(i);
                     str.add(i);
-//                panel1.add(new JLabel(i));
+                    pp.add(new JLabel(i));
                 }
-                JList l = new JList(str.toArray());
-                JScrollPane pane = new JScrollPane(l);
+
+                JScrollPane pane = new JScrollPane(pp);
+
                 if(words>40) {
                     panel.setPreferredSize(new Dimension(700, 700));
                     if(f.getWidth()<1300||f.getHeight()<800)
@@ -891,6 +939,7 @@ public class Main {
 
 
         JPanel left=new JPanel();
+        left.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         left.setLayout(new BoxLayout(left,BoxLayout.Y_AXIS));
         JLabel _left=new JLabel("Slang word");
         _left.setFont(new Font("Verdana",Font.ITALIC,20));
@@ -908,6 +957,7 @@ public class Main {
         left.add(pane);
 
         JPanel center=new JPanel();
+        center.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         center.setLayout(new BoxLayout(center,BoxLayout.Y_AXIS));
         JButton swtch=new JButton("Switch");
         swtch.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -927,6 +977,7 @@ public class Main {
         center.add(retrn);
 
         JPanel right=new JPanel();
+        right.setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         right.setLayout(new BorderLayout());
         JLabel _right=new JLabel("Definition");
         _right.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1057,6 +1108,7 @@ public class Main {
         find.addActionListener(y);
         retrn.addActionListener(y);
         his.addActionListener(y);
+        f.getContentPane().setBackground(Color.getHSBColor(0.25f,0.522f,0.976f));
         f.add(left);
         f.add(center);
         f.add(right);
