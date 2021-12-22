@@ -1,6 +1,7 @@
 package vn.edu.hcmus.student.sv19127520;
 
 import javax.swing.*;
+import javax.xml.validation.SchemaFactoryConfigurationError;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
 import java.util.Random;
-
 class SDict{
     Vector<String> slag;
     Vector<Vector<String>> meaning;
@@ -76,9 +76,24 @@ public class Main {
         p.add(button2);
         p.add(Box.createRigidArea(new Dimension(0,5)));
 
+        JButton button8=new JButton("Delete word");
+        button8.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button8);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
+
         JButton button3=new JButton("Edit word");
         button3.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(button3);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
+
+        JButton button6=new JButton("Play game");
+        button6.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button6);
+        p.add(Box.createRigidArea(new Dimension(0,5)));
+
+        JButton button5=new JButton("Slang word for today");
+        button5.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button5);
         p.add(Box.createRigidArea(new Dimension(0,5)));
 
         JButton button4=new JButton("Reset dictionary");
@@ -86,13 +101,11 @@ public class Main {
         p.add(button4);
         p.add(Box.createRigidArea(new Dimension(0,5)));
 
-//        JButton button5=new JButton("Exit");
-//        button5.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        p.add(button5);
 
-        JButton button5=new JButton("Slang word for today");
-        button5.setAlignmentX(Component.CENTER_ALIGNMENT);
-        p.add(button5);
+        JButton button7=new JButton("Exit");
+        button7.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(button7);
+
 
         ActionListener y= e -> {
             String s=e.getActionCommand();
@@ -122,7 +135,7 @@ public class Main {
                 JPanel jPanel=new JPanel();
                 jPanel.setLayout(new FlowLayout());
                 Random rand=new Random();
-                int pos=rand.nextInt(dict.slag.size()-1);
+                int pos=rand.nextInt(dict.slag.size());
                 JLabel label=new JLabel(dict.slag.elementAt(pos)+": ");
                 label.setFont(new Font("Verdana",Font.BOLD,20));
                 jPanel.add(label);
@@ -149,12 +162,19 @@ public class Main {
                 dialog.pack();
                 dialog.setVisible(true);
             }
+            else if(s.equals("Play game")){
+                score=0;
+                createAndShowPlayGame();
+            }
         };
         button1.addActionListener(y);
         button2.addActionListener(y);
         button3.addActionListener(y);
         button4.addActionListener(y);
         button5.addActionListener(y);
+        button6.addActionListener(y);
+        button7.addActionListener(y);
+        button8.addActionListener(y);
         SpringLayout layout=new SpringLayout();
         JPanel middle=new JPanel();
         middle.setLayout(layout);
@@ -162,6 +182,158 @@ public class Main {
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER,p,0,SpringLayout.HORIZONTAL_CENTER,middle);
         layout.putConstraint(SpringLayout.VERTICAL_CENTER,p,0,SpringLayout.VERTICAL_CENTER,middle);
         f.add(middle);
+        f.pack();
+        f.setVisible(true);
+
+    }
+    public static void createResultForPlayGame(JPanel panel){
+        panel.removeAll();
+        panel.repaint();
+
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        JPanel p1=new JPanel();
+        p1.setLayout(new FlowLayout());
+        JLabel _scr=new JLabel("Score: "+score);
+        _scr.setFont(new Font("Verdana",Font.PLAIN,13));
+        p1.add(_scr);
+        panel.add(p1);
+        Random rand=new Random();
+        Vector<Integer> result=new Vector<>();
+        do{
+            int pos=rand.nextInt(dict.slag.size());
+            if(!result.contains(pos))
+                result.add(pos);
+        }while(result.size()<4);
+        int pos_correct=rand.nextInt(4);
+        if(status_game.equals("slang")){
+            int pos_meaning=rand.nextInt(dict.meaning.elementAt(result.elementAt(pos_correct)).size());
+            JLabel label=new JLabel("Definition: "+"\""+dict.meaning.elementAt(result.elementAt(pos_correct)).elementAt(pos_meaning)+"\"");
+            label.setFont(new Font("Verdana",Font.BOLD,15));
+            panel.add(label);
+            JButton[] buttons=new JButton[4];
+            for(int i=0;i<4;i++){
+                buttons[i]=new JButton(dict.slag.elementAt(result.elementAt(i)));
+                panel.add(buttons[i]);
+            }
+            final boolean[] check = {false};
+            for(int i=0;i<4;i++){
+                int finalI = i;
+                buttons[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (!check[0]) {
+                            if (finalI == pos_correct) {
+                                score++;
+                                System.out.println("Score: " + score);
+                                buttons[finalI].setBackground(Color.GREEN);
+                                f.pack();
+                            } else {
+                                buttons[pos_correct].setBackground(Color.GREEN);
+                                buttons[finalI].setBackground(Color.RED);
+                            }
+                            check[0] =true;
+                        }
+                    }
+                });
+            }
+
+        }
+        else if(status_game.equals("defi")){
+            JLabel label=new JLabel("Slang word: "+"\""+dict.slag.elementAt(result.elementAt(pos_correct))+"\"");
+            label.setFont(new Font("Verdana",Font.BOLD,15));
+            panel.add(label);
+            JButton[] buttons=new JButton[4];
+            for(int i=0;i<4;i++){
+                int pos_meaning=rand.nextInt(dict.meaning.elementAt(result.elementAt(i)).size());
+                buttons[i]=new JButton(dict.meaning.elementAt(result.elementAt(i)).elementAt(pos_meaning));
+                panel.add(buttons[i]);
+            }
+            final boolean[] check = {false};
+            for(int i=0;i<4;i++){
+                int finalI = i;
+                buttons[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (!check[0]) {
+                            if (finalI == pos_correct) {
+                                score++;
+                                System.out.println("Score: " + score);
+                                buttons[finalI].setBackground(Color.GREEN);
+                                f.pack();
+                            } else {
+                                buttons[pos_correct].setBackground(Color.GREEN);
+                                buttons[finalI].setBackground(Color.RED);
+                            }
+                            check[0] =true;
+                        }
+                    }
+                });
+            }
+        }
+        panel.add(Box.createRigidArea(new Dimension(0,50)));
+        f.pack();
+    }
+    public static String status_game;
+    public static int score=0;
+    public static void createAndShowPlayGame(){
+        w=f.getWidth();
+        h=f.getHeight();
+        f.dispose();
+        f=new JFrame("Play Game");
+        //f.setPreferredSize(new Dimension(w,h));
+        f.setMinimumSize(new Dimension(500,100));
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel=new JPanel();
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        JLabel label=new JLabel("Guess:");
+        label.setFont(new Font("Verdana",Font.ITALIC,20));
+        JPanel p=new JPanel();
+        p.setLayout(new FlowLayout());
+        p.add(label);
+        panel.add(p);
+        JPanel buttons=new JPanel();
+        buttons.setLayout(new FlowLayout());
+        JButton button=new JButton("Slang");
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton button1=new JButton("Definition");
+        button1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttons.add(button);
+        buttons.add(button1);
+        panel.add(buttons);
+        JPanel panel1=new JPanel();
+        panel.add(panel1);
+        ActionListener y=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s=e.getActionCommand();
+                if(s.equals("Slang")){
+                    status_game="slang";
+                }
+                else if(s.equals("Definition")){
+                    status_game="defi";
+                }
+                createResultForPlayGame(panel1);
+
+                f.pack();
+            }
+        };
+        button.addActionListener(y);
+        button1.addActionListener(y);
+
+        JButton retrn=new JButton("Return");
+        retrn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createAndShowMenu();
+            }
+        });
+        JPanel panel2=new JPanel();
+        panel2.add(panel);
+        JPanel panel3=new JPanel();
+        panel3.setLayout(new FlowLayout());
+        panel3.add(retrn);
+        panel.add(panel3);
+        f.add(panel2);
         f.pack();
         f.setVisible(true);
 
@@ -854,16 +1026,17 @@ public class Main {
                     history.add(line);
                 line=reader.readLine();
             }
-            dict.show();
+            //dict.show();
         }
         catch (Exception exception){
             exception.printStackTrace();
         }
     }
     public static void main(String[] args) {
-	LoadData();
-    JFrame.setDefaultLookAndFeelDecorated(true);
-    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    createAndShowMenu();
+
+	    LoadData();
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        createAndShowMenu();
     }
 }
