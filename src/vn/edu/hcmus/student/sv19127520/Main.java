@@ -908,13 +908,13 @@ public class Main {
                 return;
             }
             else {
-                Vector<String> str = new Vector<>(x);
                 JPanel pp=new JPanel();
                 pp.setLayout(new BoxLayout(pp,BoxLayout.Y_AXIS));
                 pp.setBackground(Color.getHSBColor(0f,0.05f,0.859f));
+                for(String i:x){
+                    pp.add(new JLabel(i));
+                }
                 for (String i : s) {
-                    System.out.println(i);
-                    str.add(i);
                     pp.add(new JLabel(i));
                 }
 
